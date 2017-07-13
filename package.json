@@ -1,0 +1,31 @@
+{
+  "name": "highchart_db_test",
+  "version": "0.0.1",
+  "description": "Dynamic statistics module based on CouchDB configs",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -a vimsa.npolar.no -p 8000 -c-1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srldl/highchart_db_test.git"
+  },
+  "keywords": [
+    "highchart"
+  ],
+  "author": "srldl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/srldl/highchart_db_test/issues"
+  },
+  "homepage": "https://github.com/srldl/highchart_db_test#readme",
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "http-server": "^0.8.5"
+  },
+  "dependencies": {
+    "angular": "^1.5.8",
+    "highcharts": "^5.0.10"
+  }
+}

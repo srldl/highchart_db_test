@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html ng-app="element_test">
+<head>
+    <meta charset="utf-8" />
+    <title> Highcharts directive demo </title>
+ <!-- <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script> -->
+ <link href="./highchart.css" rel="stylesheet">
+
+
+</head>
+<body ng-controller="myController">
+
+<h1>Expedition statistics</h1>
+<h3>Days in field parameters</h3>
+
+<form novalidate>
+    Start date:<br>
+    <input type="text" ng-model="unit.start_date"><br>
+    End date:<br>
+    <input type="text" ng-model="unit.end_date">
+    <br><br>
+    <button ng-click="submit()">Submit</button>
+</form>
+
+
+   <!--  <hc-chart options="chartOptions">Placeholder for generic chart</hc-chart> -->
+     <hc-pie-chart title="Days in field" data="pieData">Days in field - pie chart</hc-pie-chart>
+     <hc-bar-chart title="Days in field" data="barData">Days in field - bar data</hc-bar-chart>
+
+<script src="./bundle.js"></script>
+</body>
+</html>
+
+
+
