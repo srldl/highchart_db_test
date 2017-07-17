@@ -15,7 +15,7 @@ var hcBarChart = function (Highcharts) {
         type: 'column'
     },
     title: {
-        text: 'Days in field'
+        text: scope.title
     },
     subtitle: {
         text: 'Days in field per activity. See: <a href="http://data.npolar.no/expedition">expedition database</a>.'

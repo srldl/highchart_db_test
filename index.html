@@ -2,8 +2,7 @@
 <html ng-app="element_test">
 <head>
     <meta charset="utf-8" />
-    <title> Highcharts directive demo </title>
- <!-- <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script> -->
+    <title> Highcharts Couchdb demo </title>
  <link href="./highchart.css" rel="stylesheet">
 
 
@@ -22,10 +21,19 @@
     <button ng-click="submit()">Submit</button>
 </form>
 
+<div ng-repeat="x in all.component">
+   <div ng-if="x.presentation==='piechart'">
+        <hc-pie-chart title={{x.title}} data="piechart">Days in field - pie chart</hc-pie-chart>
+   </div>
+   <div ng-if="x.presentation=='barchart'">
+       <hc-bar-chart title={{x.title}} data="barchart">Days in field - bar data</hc-bar-chart>
+   </div>
+   <div ng-if="x.presentation=='graph'">
+     <hc-chart options="chartOptions">Placeholder for generic chart</hc-chart>
+   </div>
+</div>
 
-   <!--  <hc-chart options="chartOptions">Placeholder for generic chart</hc-chart> -->
-     <hc-pie-chart title="Days in field" data="pieData">Days in field - pie chart</hc-pie-chart>
-     <hc-bar-chart title="Days in field" data="barData">Days in field - bar data</hc-bar-chart>
+
 
 <script src="./bundle.js"></script>
 </body>
