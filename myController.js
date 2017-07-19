@@ -2,26 +2,29 @@
 
  var myController = function ($scope, $controller, dbSearch) {
 
-    //Set link for now - demo purposes
-    var link = "http://api-test.data.npolar.no/statistic/a9fb0ae5ad56720b48766d8db219217e";
-
                 $scope.submit = function() {
-                    //Get dates
-                    console.log($scope);
+                    //Get start end end dates if they exist
+                    var limit_dates = $scope.unit;
+                    console.log(limit_dates);
 
-                  //  var link = "http://db-test.data.npolar.no:5984/statistics/" +
+                    var id = "a9fb0ae5ad56720b48766d8db219217e";
+
+                    //Set link for now - demo purposes
+                    var link = "http://api-test.data.npolar.no/statistic/" + id;
+
                     //Fetch search result
                     dbSearch.getValues(link).then(
                           function(results) {
-                               // on success
+                              // on success
                               console.log(results.data);
                               $scope.all = results.data;
-                             // $scope.all = EstStats(results.data);
+
+                               console.log(limit_dates);
 
 
                                         $scope.barchart =
                                       [{
-                                        name: 'research',
+                                        name: 'researchzzz',
                                         y: 56.33
                                     }, {
                                         name: 'topographical mapping',
@@ -36,7 +39,6 @@
                                         name: 'other',
                                         y: 0.91
                                     }];
-
 
                                      // Sample data for pie chart
                                         $scope.piechart = [{
