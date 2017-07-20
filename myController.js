@@ -34,8 +34,7 @@
 
                                   $scope.barchart = barchart;
                                   $scope.piechart = piechart;
-                                  console.log($scope.barchart);
-                                  console.log($scope.piechart);
+
 
                                     $scope.barchart[0][1] =
                                       [{

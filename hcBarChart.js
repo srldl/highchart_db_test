@@ -7,6 +7,7 @@ var hcBarChart = function (Highcharts) {
                     template: '<div></div>',
                     scope: {
                         title: '@',
+                        subtitle: '@',
                         data: '='
                     },
                     link: function (scope, element) {
@@ -18,7 +19,7 @@ var hcBarChart = function (Highcharts) {
         text: scope.title
     },
     subtitle: {
-        text: 'Days in field per activity. See: <a href="http://data.npolar.no/expedition">expedition database</a>.'
+        text: scope.subtitle
     },
     xAxis: {
         type: 'category'

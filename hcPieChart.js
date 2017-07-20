@@ -7,6 +7,7 @@ var hcPieChart = function (Highcharts) {
                     template: '<div></div>',
                     scope: {
                         title: '@',
+                        subtitle: '@',
                         data: '='
                     },
                     link: function (scope, element) {
@@ -18,8 +19,8 @@ var hcPieChart = function (Highcharts) {
                                 text: scope.title
                             },
                             subtitle: {
-        text: 'Days in field per fieldwork/cruise. See: <a href="http://data.npolar.no/expedition">expedition database</a>.'
-    },
+                                text: scope.subtitle
+                            },
                             plotOptions: {
                                 pie: {
                                     allowPointSelect: true,
