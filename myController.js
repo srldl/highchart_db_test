@@ -2,34 +2,67 @@
 
  var myController = function ($scope, $controller, dbSearch) {
 
-                $scope.submit = function() {
-                    //Get start end end dates if they exist
-                    var limit_dates = $scope.unit;
-                    console.log(limit_dates);
+              var id = "a9fb0ae5ad56720b48766d8db219217e";
+              //var id = "d9f287b7b7fd667d175b5a60280023e7";
 
-                    var id = "a9fb0ae5ad56720b48766d8db219217e";
-                    //var id = "d9f287b7b7fd667d175b5a60280023e7";
+              //Set link for now - demo purposes
+              var link = "http://api-test.data.npolar.no/statistic/" + id;
 
-                    //Set link for now - demo purposes
-                    var link = "http://api-test.data.npolar.no/statistic/" + id;
+              //Configuration object
+              var conf = new Object();
+
+              //Fetch search result
+              dbSearch.getValues(link).then(
+                    function(results) {
+                        // on success
+                        conf = results.data;
+
+
+                        //Return title and subtitle
+                        $scope.main_title = conf.main_title;
+                        $scope.main_subtitle = conf.main_subtitle;
+              }); //end getValues
+
+
+              $scope.submit = function() {
+
+                     console.log(conf);
+
+                    //Extract search component search
+                    for (var k = 0; k < (conf.component).length; k++) {
+
+                       //The search string
+                      var search = conf.component[k].search_uri;
+
+                       //If limited by start_date and end_date -add it to search
+                       if ($scope.unit && $scope.unit.start_date && $scope.unit.end_date) {
+                          var link2 = '&filter-start_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
+                          var link3 = '&filter-end_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
+                          search = search + link2 + link3;
+                       }
+
 
                     //Fetch search result
-                    dbSearch.getValues(link).then(
+                    dbSearch.getValues(search).then(
                           function(results) {
                                // on success
                                console.log(results.data);
-                               $scope.all = results.data;
+                               $scope.search = results.data;
+
+
+                              //Push conf to html -for now
+                              $scope.conf = conf;
 
                                //Create piechart array
-                               var piechart = new Array(($scope.all.component).length);
+                               var piechart = new Array((conf.component).length);
                                for (var j = 0; j < piechart.length; j++) {
-                                    piechart[j] = new Array(($scope.all.component[j].visuals).length);
+                                    piechart[j] = new Array((conf.component[j].visuals).length);
                                }
 
                                //Create barchart array
-                               var barchart = new Array(($scope.all.component).length);
+                               var barchart = new Array((conf.component).length);
                                for (var i = 0; i < barchart.length; i++) {
-                                    barchart[i] = new Array(($scope.all.component[i].visuals).length);
+                                    barchart[i] = new Array((conf.component[i].visuals).length);
                                }
 
                                   $scope.barchart = barchart;
@@ -111,6 +144,7 @@
 
 
                     }); //end getValues
+                  }
 
                 };
 
@@ -119,4 +153,4 @@
 
 };
 
- module.exports = myController;
+module.exports = myController;

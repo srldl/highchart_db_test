@@ -9,8 +9,8 @@
 </head>
 <body ng-controller="myController">
 
-<h1>Expedition statistics</h1>
-<h3>Days in field parameters</h3>
+<h1>{{main_title}}</h1>
+<h3>{{main_subtitle}}</h3>
 
 <form novalidate>
     Start date:<br>
@@ -21,7 +21,7 @@
     <button ng-click="submit()">Submit</button>
 </form>
 
-<div ng-repeat="x in all.component">
+<div ng-repeat="x in conf.component">
 
   <div ng-repeat="y in x.visuals">
 
