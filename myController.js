@@ -28,7 +28,7 @@
 
                      console.log(conf);
 
-                    //Extract search component search
+                    ////Get the search bases, one by one
                     for (var k = 0; k < (conf.component).length; k++) {
 
                        //The search string
@@ -42,105 +42,117 @@
                        }
 
 
+
                     //Fetch search result
                     dbSearch.getValues(search).then(
                           function(results) {
-                               // on success
-                               console.log(results.data);
-                               $scope.search = results.data;
+                            // on success
+
+                            console.log(results.data);
+                            var search = results.data;
+
+                            //do something to pick up right k!
 
 
-                              //Push conf to html -for now
-                              $scope.conf = conf;
+                            //Get all config visuals out
+                            console.log((conf.component[0].visuals).length);
+                            for (var p = 0; p < (conf.component[0].visuals).length; p++) {
+                                 console.log(p);
 
-                               //Create piechart array
-                               var piechart = new Array((conf.component).length);
-                               for (var j = 0; j < piechart.length; j++) {
-                                    piechart[j] = new Array((conf.component[j].visuals).length);
-                               }
-
-                               //Create barchart array
-                               var barchart = new Array((conf.component).length);
-                               for (var i = 0; i < barchart.length; i++) {
-                                    barchart[i] = new Array((conf.component[i].visuals).length);
-                               }
-
-                                  $scope.barchart = barchart;
-                                  $scope.piechart = piechart;
+                            } //p loop - visuals
 
 
-                                    $scope.barchart[0][1] =
-                                      [{
-                                        name: 'research[0][0]',
-                                        y: 56.33
-                                    }, {
-                                        name: 'topographical mapping',
-                                        y: 24.03
-                                    }, {
-                                        name: 'outreach VIP',
-                                        y: 10.38
-                                    }, {
-                                        name: 'logistic operations',
-                                        y: 4.77
-                                    }, {
-                                        name: 'other',
-                                        y: 0.91
-                                    }];
+                                    //Push conf to html -for now
+                                    $scope.conf = conf;
 
-                                    $scope.barchart[0][2] =
-                                      [{
-                                        name: 'research[1][0]',
-                                        y: 56.33
-                                    }, {
-                                        name: 'topographical mapping',
-                                        y: 24.03
-                                    }, {
-                                        name: 'outreach VIP',
-                                        y: 10.38
-                                    }, {
-                                        name: 'logistic operations',
-                                        y: 4.77
-                                    }, {
-                                        name: 'other',
-                                        y: 0.91
-                                    }];
+                                     //Create piechart array
+                                     var piechart = new Array((conf.component).length);
+                                     for (var j = 0; j < piechart.length; j++) {
+                                          piechart[j] = new Array((conf.component[j].visuals).length);
+                                     }
+
+                                     //Create barchart array
+                                     var barchart = new Array((conf.component).length);
+                                     for (var i = 0; i < barchart.length; i++) {
+                                          barchart[i] = new Array((conf.component[i].visuals).length);
+                                     }
+
+                                        $scope.barchart = barchart;
+                                        $scope.piechart = piechart;
 
 
-                                    $scope.barchart[0][4] =
-                                      [{
-                                        name: 'research[1][1]',
-                                        y: 56.33
-                                    }, {
-                                        name: 'topographical mapping',
-                                        y: 24.03
-                                    }, {
-                                        name: 'other',
-                                        y: 0.91
-                                    }];
+                                          $scope.barchart[0][1] =
+                                            [{
+                                              name: 'research[0][0]',
+                                              y: 56.33
+                                          }, {
+                                              name: 'topographical mapping',
+                                              y: 24.03
+                                          }, {
+                                              name: 'outreach VIP',
+                                              y: 10.38
+                                          }, {
+                                              name: 'logistic operations',
+                                              y: 4.77
+                                          }, {
+                                              name: 'other',
+                                              y: 0.91
+                                          }];
 
-                                     //Sample data for pie chart
-                                     $scope.piechart[0][0] = [{
-                                                name: "Fieldwork0",
-                                                y: 56.33
-                                            }, {
-                                                name: "Cruise0",
-                                                y: 24.03,
-                                                sliced: true,
-                                                selected: true
-                                     }]
+                                          $scope.barchart[0][2] =
+                                            [{
+                                              name: 'research[1][0]',
+                                              y: 56.33
+                                          }, {
+                                              name: 'topographical mapping',
+                                              y: 24.03
+                                          }, {
+                                              name: 'outreach VIP',
+                                              y: 10.38
+                                          }, {
+                                              name: 'logistic operations',
+                                              y: 4.77
+                                          }, {
+                                              name: 'other',
+                                              y: 0.91
+                                          }];
 
-                                     // Sample data for pie chart
-                                     $scope.piechart[0][3] = [{
-                                                name: "Fieldwork3",
-                                                y: 56.33
-                                            }, {
-                                                name: "Cruise3",
-                                                y: 24.03,
-                                                sliced: true,
-                                                selected: true
-                                     }]
 
-                                    console.log($scope.barchart);
+                                          $scope.barchart[0][4] =
+                                            [{
+                                              name: 'research[1][1]',
+                                              y: 56.33
+                                          }, {
+                                              name: 'topographical mapping',
+                                              y: 24.03
+                                          }, {
+                                              name: 'other',
+                                              y: 0.91
+                                          }];
+
+                                           //Sample data for pie chart
+                                           $scope.piechart[0][0] = [{
+                                                      name: "Fieldwork0",
+                                                      y: 56.33
+                                                  }, {
+                                                      name: "Cruise0",
+                                                      y: 24.03,
+                                                      sliced: true,
+                                                      selected: true
+                                           }]
+
+                                           // Sample data for pie chart
+                                           $scope.piechart[0][3] = [{
+                                                      name: "Fieldwork3",
+                                                      y: 56.33
+                                                  }, {
+                                                      name: "Cruise3",
+                                                      y: 24.03,
+                                                      sliced: true,
+                                                      selected: true
+                                           }]
+
+                                          console.log($scope.barchart);
 
 
                     }); //end getValues
