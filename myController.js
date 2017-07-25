@@ -2,37 +2,39 @@
 
  var myController = function ($scope, $controller, dbSearch) {
 
-              var id = "a9fb0ae5ad56720b48766d8db219217e";
-              //var id = "d9f287b7b7fd667d175b5a60280023e7";
+              //var id = "a9fb0ae5ad56720b48766d8db219217e";
+              var id = "d9f287b7b7fd667d175b5a60280023e7";
 
               //Set link for now - demo purposes
               var link = "http://api-test.data.npolar.no/statistic/" + id;
 
               //Configuration object
-              var conf = new Object();
+              var config = {};
 
               //Fetch search result
               dbSearch.getValues(link).then(
                     function(results) {
                         // on success
-                        conf = results.data;
-
+                        config = results.data;
+                        console.log(config);
+                        console.log("---------");
 
                         //Return title and subtitle
-                        $scope.main_title = conf.main_title;
-                        $scope.main_subtitle = conf.main_subtitle;
+                        $scope.main_title = config.main_title;
+                        $scope.main_subtitle = config.main_subtitle;
               }); //end getValues
 
 
               $scope.submit = function() {
 
-                     console.log(conf);
+                    var search = [];
 
                     ////Get the search bases, one by one
-                    for (var k = 0; k < (conf.component).length; k++) {
+                    for (var k = 0; k < (config.component).length; k++) {
 
-                       //The search string
-                      var search = conf.component[k].search_uri;
+                      //The search string
+                      search = config.component[k].search_uri;
+                      console.log(search);
 
                        //If limited by start_date and end_date -add it to search
                        if ($scope.unit && $scope.unit.start_date && $scope.unit.end_date) {
@@ -40,45 +42,53 @@
                           var link3 = '&filter-end_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
                           search = search + link2 + link3;
                        }
+                    }
 
 
-
-                    //Fetch search result
+                    var m=0;
+                    //Fetch search result-all og them
                     dbSearch.getValues(search).then(
-                          function(results) {
-                            // on success
+                        function(results) {
+                        // on success
 
-                            console.log(results.data);
-                            var search = results.data;
+                          console.log(results.data);
+                          var search = results.data;
 
-                            //do something to pick up right k!
+                          //Push conf to html -for now
+                          $scope.config = config;
 
+                          //Create piechart array
+                          var piechart = new Array((config.component).length);
+                          for (var j = 0; j < piechart.length; j++) {
+                              piechart[j] = new Array((config.component[j].visuals).length);
+                          }
 
-                            //Get all config visuals out
-                            console.log((conf.component[0].visuals).length);
-                            for (var p = 0; p < (conf.component[0].visuals).length; p++) {
-                                 console.log(p);
+                          //Create barchart array
+                          var barchart = new Array((config.component).length);
+                          for (var i = 0; i < barchart.length; i++) {
+                              barchart[i] = new Array((config.component[i].visuals).length);
+                          }
 
-                            } //p loop - visuals
+                          $scope.barchart = barchart;
+                          $scope.piechart = piechart;
 
+                          var res = getStats(config,search);
 
-                                    //Push conf to html -for now
-                                    $scope.conf = conf;
+                          //Get all config visuals out
+                          for (var p = 0; p < (config.component[m].visuals).length; p++) {
 
-                                     //Create piechart array
-                                     var piechart = new Array((conf.component).length);
-                                     for (var j = 0; j < piechart.length; j++) {
-                                          piechart[j] = new Array((conf.component[j].visuals).length);
-                                     }
+                              switch(config.component[m].visuals[p].presentation) {
+                                      case 'barchart':
+                                         $scope.barchart[m][p] = res;
+                                         break;
+                                      case 'piechart':
+                                        $scope.piechart[m][p] = res;
+                                         break;
+                                      case 'graph':
+                                         // not implemented
+                              }
 
-                                     //Create barchart array
-                                     var barchart = new Array((conf.component).length);
-                                     for (var i = 0; i < barchart.length; i++) {
-                                          barchart[i] = new Array((conf.component[i].visuals).length);
-                                     }
-
-                                        $scope.barchart = barchart;
-                                        $scope.piechart = piechart;
+                          } //p loop - visuals
 
 
                                           $scope.barchart[0][1] =
@@ -156,13 +166,14 @@
 
 
                     }); //end getValues
-                  }
+
 
                 };
-
-
-
-
 };
+
+//compute statistics
+function getStats(config,search) {
+   return [];
+}
 
 module.exports = myController;
