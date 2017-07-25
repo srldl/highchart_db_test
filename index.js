@@ -14,3 +14,4 @@ app.directive('hcPieChart', require('./hcPieChart'));
 app.directive('hcBarChart', require('./hcBarChart'));
 app.controller('myController', require('./myController'));
 app.service('dbSearch', require('./dbSearch'));
+app.factory('getSearch', require('./getSearch'));

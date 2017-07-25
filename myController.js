@@ -1,6 +1,6 @@
  "use strict";
 
- var myController = function ($scope, $controller, dbSearch) {
+ var myController = function ($scope, $controller, dbSearch, getSearch) {
 
               //var id = "a9fb0ae5ad56720b48766d8db219217e";
               var id = "d9f287b7b7fd667d175b5a60280023e7";
@@ -11,13 +11,11 @@
               //Configuration object
               var config = {};
 
-              //Fetch search result
+              //Fetch result which is the config
               dbSearch.getValues(link).then(
                     function(results) {
                         // on success
                         config = results.data;
-                        console.log(config);
-                        console.log("---------");
 
                         //Return title and subtitle
                         $scope.main_title = config.main_title;
@@ -33,21 +31,30 @@
                     for (var k = 0; k < (config.component).length; k++) {
 
                       //The search string
-                      search = config.component[k].search_uri;
-                      console.log(search);
+                      search[k] = config.component[k].search_uri;
 
                        //If limited by start_date and end_date -add it to search
                        if ($scope.unit && $scope.unit.start_date && $scope.unit.end_date) {
                           var link2 = '&filter-start_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
                           var link3 = '&filter-end_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
-                          search = search + link2 + link3;
+                          search[k] = search[k] + link2 + link3;
                        }
                     }
 
 
-                    var m=0;
-                    //Fetch search result-all og them
-                    dbSearch.getValues(search).then(
+
+
+                   // var m=0;
+
+                    //search = ['http://vg.no','http://dagbladet.no'];
+                     getSearch(search).then(function(datas){
+                          console.log(datas);
+
+                    })
+
+
+                    //Fetch search result-all og them m is the search component interator
+            /*        dbSearch.getValues(search).then(
                         function(results) {
                         // on success
 
@@ -87,7 +94,7 @@
                                       case 'graph':
                                          // not implemented
                               }
-
+-
                           } //p loop - visuals
 
 
@@ -167,7 +174,7 @@
 
                     }); //end getValues
 
-
+*/
                 };
 };
 
