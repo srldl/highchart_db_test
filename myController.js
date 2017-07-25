@@ -42,26 +42,13 @@
                     }
 
 
-
-
-                   // var m=0;
-
                     //search = ['http://vg.no','http://dagbladet.no'];
-                     getSearch(search).then(function(datas){
-                          console.log(datas);
+                    getSearch(search).then(function(data){
+                          console.log(data);
 
-                    })
+                           var search = data;
 
-
-                    //Fetch search result-all og them m is the search component interator
-            /*        dbSearch.getValues(search).then(
-                        function(results) {
-                        // on success
-
-                          console.log(results.data);
-                          var search = results.data;
-
-                          //Push conf to html -for now
+                           //Push conf to html -for now
                           $scope.config = config;
 
                           //Create piechart array
@@ -81,24 +68,7 @@
 
                           var res = getStats(config,search);
 
-                          //Get all config visuals out
-                          for (var p = 0; p < (config.component[m].visuals).length; p++) {
-
-                              switch(config.component[m].visuals[p].presentation) {
-                                      case 'barchart':
-                                         $scope.barchart[m][p] = res;
-                                         break;
-                                      case 'piechart':
-                                        $scope.piechart[m][p] = res;
-                                         break;
-                                      case 'graph':
-                                         // not implemented
-                              }
--
-                          } //p loop - visuals
-
-
-                                          $scope.barchart[0][1] =
+                                        $scope.barchart[0][1] =
                                             [{
                                               name: 'research[0][0]',
                                               y: 56.33
@@ -168,18 +138,27 @@
                                                       sliced: true,
                                                       selected: true
                                            }]
-
-                                          console.log($scope.barchart);
-
-
-                    }); //end getValues
-
-*/
-                };
+                });
+};
 };
 
 //compute statistics
 function getStats(config,search) {
+   //If dates
+   for (var a = 0; a < (config.component).length; a++) {
+     for (var b = 0; b < (config.component[a].visuals).length; b++) {
+       //Two set of dates that need comparison
+       if (config.component[a].visuals[b].db_field_dates)  {
+          console.log("both2");
+       //Two dates that need comparison
+       } else if ((config.component[a].visuals[b].operational_field).indexOf('-')>-1) {
+          console.log("dates");
+       //A value field only
+       } else {
+          console.log("value");
+       };
+     };
+   };
    return [];
 }
 

@@ -17,24 +17,15 @@ var getSearch = function($http,$q){
  		 method: 'GET',
   		 url: srch,
 	  }).then(function successCallback(data) {
-	  	  deferred.resolve(data);
-         // this callback will be called asynchronously
+	  	 // this callback will be called asynchronously
          // when the response is available
+	  	  deferred.resolve(data);
   	  }, function errorCallback(data) {
   	  	  // called asynchronously if an error occurs
   	  	  deferred.reject();
      });
 
-
-    /*  $http.get(srch).
-      success(function(data){
-        deferred.resolve(data);
-      }).
-      error(function(error){
-          deferred.reject();
-      }); */
-
-      promises.push(deferred.promise);
+     promises.push(deferred.promise);
 
     })
 
