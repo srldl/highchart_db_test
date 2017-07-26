@@ -23,6 +23,7 @@
               }); //end getValues
 
 
+              //When submit button is pressed
               $scope.submit = function() {
 
                     var search = [];
@@ -41,12 +42,11 @@
                        }
                     }
 
-
-                    //search = ['http://vg.no','http://dagbladet.no'];
+                    //Get all search GET request asynchronously
                     getSearch(search).then(function(data){
-                          console.log(data);
 
-                           var search = data;
+                          var search = data;
+                          console.log(search);
 
                            //Push conf to html -for now
                           $scope.config = config;
@@ -66,87 +66,36 @@
                           $scope.barchart = barchart;
                           $scope.piechart = piechart;
 
-                          var res = getStats(config,search);
+                          //Go though each visual in config
+                          for (var a = 0; a < (config.component).length; a++) {
+                            for (var b = 0; b < (config.component[a].visuals).length; b++) {
+                               //How should things be presented
+                               var presentation = config.component[a].visuals[b].presentation;
+                               var res = getStats(config,search,a,b);
+                               switch(presentation) {
+                                   case 'barchart':
+                                         $scope.barchart[a][b] = res;
+                                         break;
+                                   case 'piechart':
+                                         $scope.piechart[a][b] = res;
+                                         break;
+                                   case 'graph':
+                                         // not implemented
+                                         break;
+                               }
 
-                                        $scope.barchart[0][1] =
-                                            [{
-                                              name: 'research[0][0]',
-                                              y: 56.33
-                                          }, {
-                                              name: 'topographical mapping',
-                                              y: 24.03
-                                          }, {
-                                              name: 'outreach VIP',
-                                              y: 10.38
-                                          }, {
-                                              name: 'logistic operations',
-                                              y: 4.77
-                                          }, {
-                                              name: 'other',
-                                              y: 0.91
-                                          }];
+                            }
+                          }
 
-                                          $scope.barchart[0][2] =
-                                            [{
-                                              name: 'research[1][0]',
-                                              y: 56.33
-                                          }, {
-                                              name: 'topographical mapping',
-                                              y: 24.03
-                                          }, {
-                                              name: 'outreach VIP',
-                                              y: 10.38
-                                          }, {
-                                              name: 'logistic operations',
-                                              y: 4.77
-                                          }, {
-                                              name: 'other',
-                                              y: 0.91
-                                          }];
-
-
-                                          $scope.barchart[0][4] =
-                                            [{
-                                              name: 'research[1][1]',
-                                              y: 56.33
-                                          }, {
-                                              name: 'topographical mapping',
-                                              y: 24.03
-                                          }, {
-                                              name: 'other',
-                                              y: 0.91
-                                          }];
-
-                                           //Sample data for pie chart
-                                           $scope.piechart[0][0] = [{
-                                                      name: "Fieldwork0",
-                                                      y: 56.33
-                                                  }, {
-                                                      name: "Cruise0",
-                                                      y: 24.03,
-                                                      sliced: true,
-                                                      selected: true
-                                           }]
-
-                                           // Sample data for pie chart
-                                           $scope.piechart[0][3] = [{
-                                                      name: "Fieldwork3",
-                                                      y: 56.33
-                                                  }, {
-                                                      name: "Cruise3",
-                                                      y: 24.03,
-                                                      sliced: true,
-                                                      selected: true
-                                           }]
                 });
-};
 };
 
 //compute statistics
-function getStats(config,search) {
-   //If dates
-   for (var a = 0; a < (config.component).length; a++) {
-     for (var b = 0; b < (config.component[a].visuals).length; b++) {
+function getStats(config,search,a,b) {
+
+       //Create an array of objects to return
+       var arr = [];
+
        //Two set of dates that need comparison
        if (config.component[a].visuals[b].db_field_dates)  {
           console.log("both2");
@@ -156,10 +105,38 @@ function getStats(config,search) {
        //A value field only
        } else {
           console.log("value");
-       };
-     };
    };
-   return [];
+   return arr;
 }
+
+//Compare two dates and get the difference of days
+function diffDates(op_dates) {
+     return Math.floor(((Date.parse(op_dates[1])) - (Date.parse(op_dates[0]))) / 86400000)
+}
+
+//input - two sets of start and stop dates
+//return the number of days overlapping
+function getDateOverlap(op_dates,db_dates) {
+
+    //if there are not four dates, return with no overlapping = 0
+    if ((db_dates.length<2)&&(op_dates.length<2)) {
+      return 0
+    }
+
+    //If end_date before the other start_date, no overlapping = 0
+    if ((db_dates[1] < op_dates[0]) || (op_dates[1] < db_dates[0])) {
+       return 0
+    } else { //Sort
+      var diff1 = Math.floor(((Date.parse(op_dates[1])) - (Date.parse(db_dates[0]))) / 86400000);
+      var diff2 = Math.floor(((Date.parse(db_dates[1])) - (Date.parse(op_dates[0]))) / 86400000);
+      //Return the smallest of diff1 or diff2
+      if (diff1 < diff2) { return diff1 } else {return diff2 } end
+    }
+}
+
+
+};
+
+
 
 module.exports = myController;
