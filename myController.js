@@ -88,6 +88,7 @@
                           }
 
                 });
+}
 };
 
 //compute statistics
@@ -96,20 +97,48 @@ function getStats(config,search,a,b) {
        //Create an array of objects to return
        var arr = [];
 
-       //Two set of dates that need comparison
-       if (config.component[a].visuals[b].db_field_dates)  {
-          console.log("both2");
-       //Two dates that need comparison
-       } else if ((config.component[a].visuals[b].operational_field).indexOf('-')>-1) {
-          console.log("dates");
-       //A value field only
-       } else {
-          console.log("value");
-   };
-   return arr;
+       //Get hold of target fields
+       var operational_field_arr = (config.component[a].visuals[b].operational_field).split('.');
+       var db_field = config.component[a].visuals[b].db_field;
+
+
+       //Operational_field is either two dates..
+      if ((config.component[a].visuals[b].operational_field).indexOf('-')>-1) {
+
+            var replacement_field_arr = [];
+            //if replacement_field exist
+            if (config.component[a].visuals[b].replacement_field) {
+                replacement_field_arr = (config.component[a].visuals[b].replacement_field).split('-');
+            }
+            if (config.component[a].visuals[b].field_db_dates) {
+                var field_db_dates_arr = (config.component[a].visuals[b].field_db_dates).split('-');
+            }
+
+
+      //..or a value
+      } else {
+            arr = traverse(db_field,operational_field_arr);
+
+      }
+ return arr;
+
+       };
+
+
+//traverse tree, fetch db_field and operational_field
+//create an object or array of objects to be returned
+function traverse(db_field, operational_field) {
+        for (var i in search) {
+            //func.apply(this,[i,search[i]]);
+            if (search[i] !== null && typeof(search[i])=="array") {
+                //going one step down in the object tree!!
+                traverse(search[i],func);
+            }
+        }
+        return [];
 }
 
-//Compare two dates and get the difference of days
+//Compare two dates and get the number of days difference
 function diffDates(op_dates) {
      return Math.floor(((Date.parse(op_dates[1])) - (Date.parse(op_dates[0]))) / 86400000)
 }
@@ -118,15 +147,15 @@ function diffDates(op_dates) {
 //return the number of days overlapping
 function getDateOverlap(op_dates,db_dates) {
 
-    //if there are not four dates, return with no overlapping = 0
+    //if there are not four dates, return with no overlapping => 0
     if ((db_dates.length<2)&&(op_dates.length<2)) {
       return 0
     }
 
-    //If end_date before the other start_date, no overlapping = 0
+    //If end_date comes before the other start_date, no overlapping => 0
     if ((db_dates[1] < op_dates[0]) || (op_dates[1] < db_dates[0])) {
        return 0
-    } else { //Sort
+    } else { //Get the smallest difference
       var diff1 = Math.floor(((Date.parse(op_dates[1])) - (Date.parse(db_dates[0]))) / 86400000);
       var diff2 = Math.floor(((Date.parse(db_dates[1])) - (Date.parse(op_dates[0]))) / 86400000);
       //Return the smallest of diff1 or diff2
@@ -135,7 +164,7 @@ function getDateOverlap(op_dates,db_dates) {
 }
 
 
-};
+
 
 
 
