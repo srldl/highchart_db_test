@@ -26,27 +26,26 @@
               //When submit button is pressed
               $scope.submit = function() {
 
-                    var search = [];
+                    var searchstr = [];
 
                     ////Get the search bases, one by one
                     for (var k = 0; k < (config.component).length; k++) {
 
                       //The search string
-                      search[k] = config.component[k].search_uri;
+                      searchstr[k] = config.component[k].search_uri;
 
                        //If limited by start_date and end_date -add it to search
                        if ($scope.unit && $scope.unit.start_date && $scope.unit.end_date) {
                           var link2 = '&filter-start_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
                           var link3 = '&filter-end_date=' + $scope.unit.start_date + '..' + $scope.unit.end_date;
-                          search[k] = search[k] + link2 + link3;
+                          searchstr[k] = searchstr[k] + link2 + link3;
                        }
                     }
 
                     //Get all search GET request asynchronously
-                    getSearch(search).then(function(data){
+                    getSearch(searchstr).then(function(data){
 
                           var search = data;
-                          console.log(search);
 
                            //Push conf to html -for now
                           $scope.config = config;
@@ -117,8 +116,8 @@ function getStats(config,search,a,b) {
 
       //..or a value
       } else {
-            arr = traverse(db_field,operational_field_arr);
-
+           // arr = traverse(db_field,operational_field_arr,search);
+         traverse(search);
       }
  return arr;
 
@@ -127,15 +126,18 @@ function getStats(config,search,a,b) {
 
 //traverse tree, fetch db_field and operational_field
 //create an object or array of objects to be returned
-function traverse(db_field, operational_field) {
-        for (var i in search) {
-            //func.apply(this,[i,search[i]]);
-            if (search[i] !== null && typeof(search[i])=="array") {
-                //going one step down in the object tree!!
-                traverse(search[i],func);
-            }
+function traverse(o) {
+   var i;
+    for (i in o) {
+        if (!!o[i] && typeof(o[i])=="object") {
+            console.log(i, o[i]);
+            traverse(o[i]);
+            return 0;
+        } else {
+           console.log(i, o[i]);
+           //check if i = last part of db_field/operational_field
         }
-        return [];
+    }
 }
 
 //Compare two dates and get the number of days difference
