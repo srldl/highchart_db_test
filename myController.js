@@ -123,9 +123,9 @@ function getStats(config,search,a,b) {
           //   var  db_field_arr = db_field.split('.');
           //end
 
-          traverse(search[0].data.feed.entries,
+          var arr = traverse(search[0].data.feed.entries,
               config.component[0].visuals[0].db_field[0].split('.'),
-              config.component[0].visuals[0].operational_field.split('.'));
+              config.component[0].visuals[0].operational_field.split('.'), []);
       }
  return arr;
 
@@ -134,24 +134,24 @@ function getStats(config,search,a,b) {
 
 //traverse tree, fetch db_field and operational_field
 //create an object or array of objects to be returned
-//one-to-one match only
-function traverse(search,db_field_arr,operational_field_arr) {
+function traverse(search,db_field_arr,operational_field_arr,arr) {
    var i;
    var obj = {};
 
     for (i in search) {
-
         if (!!search[i] && typeof(search[i])=="object") {
-           //if found, remove value
-           if (i === db_field_arr[0]){ db_field_arr.shift() };
-           if (i === operational_field_arr[0]){ operational_field_arr.shift() };
-            traverse(search[i],db_field_arr,operational_field_arr);
+            //if found, remove next interation
+            if (i === db_field_arr[0]){ db_field_arr.shift() };
+            if (i === operational_field_arr[0]){ operational_field_arr.shift() };
+            traverse(search[i],db_field_arr,operational_field_arr, arr);
         } else {
            //Have we found our field? If so,get the value
            if (i === db_field_arr[0]){ obj.name = search[i]; };
            if (i === operational_field_arr[0]){ obj.y = parseInt(search[i]); };
+           //If obj is no longer empty, push to array
+           if ((obj.y !== undefined)&&(obj.name !== undefined)){ arr.push(obj);};
            //console.log(i, search[i]);
-           //console.log(obj);
+          console.log(arr);
 
         }
     }
