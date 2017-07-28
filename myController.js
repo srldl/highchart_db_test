@@ -3,7 +3,8 @@
  var myController = function ($scope, $controller, dbSearch, getSearch) {
 
               //var id = "a9fb0ae5ad56720b48766d8db219217e";
-              var id = "d9f287b7b7fd667d175b5a60280023e7";
+              //var id = "d9f287b7b7fd667d175b5a60280023e7";
+              var id = "d9f287b7b7fd667d175b5a6028026ce7";
 
               //Set link for now - demo purposes
               var link = "http://api-test.data.npolar.no/statistic/" + id;
@@ -116,8 +117,15 @@ function getStats(config,search,a,b) {
 
       //..or a value
       } else {
-           // arr = traverse(db_field,operational_field_arr,search);
-         traverse(search);
+          // arr = traverse(db_field,operational_field_arr,search);
+          //If db_field is a string, chop it up directly
+          //if (typeof(db_field) === 'string')
+          //   var  db_field_arr = db_field.split('.');
+          //end
+
+          traverse(search[0].data.feed.entries,
+              config.component[0].visuals[0].db_field[0].split('.'),
+              config.component[0].visuals[0].operational_field.split('.'));
       }
  return arr;
 
@@ -126,16 +134,25 @@ function getStats(config,search,a,b) {
 
 //traverse tree, fetch db_field and operational_field
 //create an object or array of objects to be returned
-function traverse(o) {
+//one-to-one match only
+function traverse(search,db_field_arr,operational_field_arr) {
    var i;
-    for (i in o) {
-        if (!!o[i] && typeof(o[i])=="object") {
-            console.log(i, o[i]);
-            traverse(o[i]);
-            return 0;
+   var obj = {};
+
+    for (i in search) {
+
+        if (!!search[i] && typeof(search[i])=="object") {
+           //if found, remove value
+           if (i === db_field_arr[0]){ db_field_arr.shift() };
+           if (i === operational_field_arr[0]){ operational_field_arr.shift() };
+            traverse(search[i],db_field_arr,operational_field_arr);
         } else {
-           console.log(i, o[i]);
-           //check if i = last part of db_field/operational_field
+           //Have we found our field? If so,get the value
+           if (i === db_field_arr[0]){ obj.name = search[i]; };
+           if (i === operational_field_arr[0]){ obj.y = parseInt(search[i]); };
+           //console.log(i, search[i]);
+           //console.log(obj);
+
         }
     }
 }
