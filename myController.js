@@ -127,18 +127,39 @@ function getStats(config,search,a,b) {
               config.component[0].visuals[0].db_field[0].split('.'),
               config.component[0].visuals[0].operational_field.split('.'), []);
       }
-        console.log(arr);
         //sum the different categories
         arr = sum(arr);
-        console.log(arr);
+
  return arr;
 
        };
 
-//Sum up the different categories
+
+//Merge the name categories to be unique. Sum the values.
 function sum(arr){
-   return arr
+  var i,j,y;
+  var result = [];
+
+  for (i = 0; i < arr.length; i++) {
+      //remove all values from array one by one so the duplicates can be summed up.
+      var fltr = arr.filter(function (entry) { return entry.name === arr[i].name; });
+
+      y = 0;
+      //filtr holds the duplicates, sum y values
+      for (j = 0; j < fltr.length; j++) {
+            y = fltr[j].y + y;
+      }
+      result.push({ name:arr[i].name, y: y });
+
+      //Remove values from start array
+      arr = arr.filter(function(entry2) { return entry2.name !== arr[i].name; });
+      i=0;
+
+  }
+  return result;
 };
+
+
 
 
 //traverse tree depth first, fetch db_field and operational_field
