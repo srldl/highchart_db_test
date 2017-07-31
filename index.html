@@ -29,7 +29,7 @@
         <hc-pie-chart title={{y.title}} subtitle={{y.subtitle}} data="piechart[$parent.$parent.$index][$index]">Days in field - pie chart</hc-pie-chart>
    </div>
    <div ng-if="y.presentation==='barchart'">
-       <hc-bar-chart data="barchart[$parent.$parent.$index][$index]" title={{y.title}} subtitle={{y.subtitle}}>Days in field - bar data</hc-bar-chart>
+       <hc-bar-chart data="barchart[$parent.$parent.$index][$index]" title={{y.title}} subtitle={{y.subtitle}} yaxis={{y.yaxis}}  xaxis={{y.xaxis}}>Days in field - bar data</hc-bar-chart>
    </div>
    <div ng-if="y.presentation==='graph'">
      <hc-chart options="chartOptions">Placeholder for generic chart</hc-chart>

@@ -8,6 +8,7 @@ var hcBarChart = function (Highcharts) {
                     scope: {
                         title: '@',
                         subtitle: '@',
+                        yaxis: '@',
                         data: '='
                     },
                     link: function (scope, element) {
@@ -22,11 +23,11 @@ var hcBarChart = function (Highcharts) {
         text: scope.subtitle
     },
     xAxis: {
-        type: 'category'
+        type: scope.xaxis
     },
     yAxis: {
         title: {
-            text: 'Activity'
+            text: scope.yaxis
         }
     },
     legend: {

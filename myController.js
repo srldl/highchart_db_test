@@ -21,6 +21,7 @@
                         //Return title and subtitle
                         $scope.main_title = config.main_title;
                         $scope.main_subtitle = config.main_subtitle;
+
               }); //end getValues
 
 
@@ -117,15 +118,10 @@ function getStats(config,search,a,b) {
 
       //..or a value
       } else {
-          // arr = traverse(db_field,operational_field_arr,search);
-          //If db_field is a string, chop it up directly
-          //if (typeof(db_field) === 'string')
-          //   var  db_field_arr = db_field.split('.');
-          //end
 
-          var arr = traverse(search[0].data.feed.entries, search[0].data.feed.entries,
-              config.component[0].visuals[0].db_field[0].split('.'),
-              config.component[0].visuals[0].operational_field.split('.'), []);
+          var arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
+              config.component[a].visuals[0].db_field[0].split('.'),
+              config.component[a].visuals[0].operational_field.split('.'), []);
       }
         //sum the different categories
         arr = sum(arr);
@@ -135,7 +131,7 @@ function getStats(config,search,a,b) {
        };
 
 
-//Merge the name categories to be unique. Sum the values.
+//We have an array to pass highchart. But some name categories could be duplicates. Thus, sum the values.
 function sum(arr){
   var i,j,y;
   var result = [];
@@ -162,8 +158,8 @@ function sum(arr){
 
 
 
-//traverse tree depth first, fetch db_field and operational_field
-//create an object or array of objects to be returned
+//Traverse tree depth first, fetch db_field and operational_field
+//Create an object or array of objects to be returned with db_fields (enumerated values)
 function traverse(control, search,db_field_arr,operational_field_arr,arr) {
    var i;
    var obj = {};
