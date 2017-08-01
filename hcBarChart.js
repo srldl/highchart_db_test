@@ -12,6 +12,7 @@ var hcBarChart = function (Highcharts) {
                         data: '='
                     },
                     link: function (scope, element) {
+                        console.log(scope);
                         Highcharts.chart(element[0], {
  chart: {
         type: 'column'
@@ -38,13 +39,13 @@ var hcBarChart = function (Highcharts) {
             borderWidth: 0,
             dataLabels: {
                 enabled: true,
-                format: '{point.y:.1f}%'
+                format: '{point.y:.1f}'
             }
         }
     },
     tooltip: {
         headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b> of total<br/>'
     },
  series: [{
                                 data: scope.data
