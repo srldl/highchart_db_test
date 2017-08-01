@@ -92,7 +92,10 @@
 }
 };
 
-//compute statistics
+//compute statistics, four cases:
+//dates  - start and end dates
+//values - either single parameter,enumerated values
+//       - several values as boolean
 function getStats(config,search,a,b) {
 
        //Create an array of objects to return
@@ -119,12 +122,26 @@ function getStats(config,search,a,b) {
       //..or a value
       } else {
 
-          var arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
-              config.component[a].visuals[0].db_field[0].split('.'),
-              config.component[a].visuals[0].operational_field.split('.'), []);
+          //If db_field is one field array, chop it up directly
+          if (db_field.length === 1) {
+             var arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
+                                config.component[a].visuals[0].db_field[0].split('.'),
+                                config.component[a].visuals[0].operational_field.split('.'), []);
+
+
+          //db_field is an array which contains booleans to be summed up
+          } else {
+                var arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
+                                    config.component[a].visuals[0].db_field,
+                                    config.component[a].visuals[0].operational_field.split('.'), []);
+          }
+
       }
         //sum the different categories
-        arr = sum(arr);
+        if (arr.length > 0){
+
+          arr = sum(arr);
+        }
 
  return arr;
 
@@ -133,10 +150,12 @@ function getStats(config,search,a,b) {
 
 //We have an array to pass highchart. But some name categories could be duplicates. Thus, sum the values.
 function sum(arr){
-  var i,j,y;
+  var j,y;
   var result = [];
+  var i = 0;
 
-  for (i = 0; i < arr.length; i++) {
+  while (i < arr.length) {
+
       //remove all values from array one by one so the duplicates can be summed up.
       var fltr = arr.filter(function (entry) { return entry.name === arr[i].name; });
 
@@ -149,18 +168,14 @@ function sum(arr){
 
       //Remove values from start array
       arr = arr.filter(function(entry2) { return entry2.name !== arr[i].name; });
-      i=0;
-
   }
   return result;
 };
 
 
-
-
 //Traverse tree depth first, fetch db_field and operational_field
 //Create an object or array of objects to be returned with db_fields (enumerated values)
-function traverse(control, search,db_field_arr,operational_field_arr,arr) {
+function traverse(control, search, db_field_arr, operational_field_arr, arr) {
    var i;
    var obj = {};
 
@@ -170,10 +185,22 @@ function traverse(control, search,db_field_arr,operational_field_arr,arr) {
             if (i === db_field_arr[0]){ db_field_arr.shift() };
             if (i === operational_field_arr[0]){ operational_field_arr.shift() };
             traverse(control,search[i],db_field_arr,operational_field_arr, arr);
+
+        //case with array of values in db_field_arr
+        } else if (operational_field_arr[0] === '') {
+                //if we found a match with value
+                obj = {};
+                if ((db_field_arr.indexOf(i) > -1)&&(search[i] === true)) {
+                      { obj.name = i; obj.y = 1 };
+                      arr.push(obj);
+                }
+
+
         } else {
-           //Have we found our field? If so,get the value to be viewed as graphics.
+           //Have we found our value? If so, get the value to be viewed as graphics.
+
            if (i === db_field_arr[0]){ obj.name = search[i]; };
-           if (i === operational_field_arr[0]){ obj.y = parseInt(search[i]); };
+           if (i === operational_field_arr[0]){ obj.y = parseInt(search[i]);}
 
            //If obj is no longer empty, push to array
            if ((obj.y !== undefined)&&(obj.name !== undefined)){ arr.push(obj);};
