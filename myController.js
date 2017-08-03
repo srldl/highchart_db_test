@@ -6,6 +6,7 @@
               //var id = "d9f287b7b7fd667d175b5a60280023e7";
               var id = "d9f287b7b7fd667d175b5a6028026ce7";
 
+
               //Set link for now - demo purposes
               var link = "http://api-test.data.npolar.no/statistic/" + id;
 
@@ -143,6 +144,8 @@ function getStats(config,search,a,b) {
           arr = sum(arr);
         }
 
+        console.log(arr);
+
  return arr;
 
        };
@@ -236,10 +239,6 @@ function getDateOverlap(op_dates,db_dates) {
       if (diff1 < diff2) { return diff1 } else {return diff2 } end
     }
 }
-
-
-
-
 
 
 module.exports = myController;
