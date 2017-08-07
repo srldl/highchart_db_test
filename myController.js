@@ -73,7 +73,7 @@
                             for (var b = 0; b < (config.component[a].visuals).length; b++) {
                                //How should things be presented
                                var presentation = config.component[a].visuals[b].presentation;
-                               var res = getStats(config,search,a,b);
+                               var res = getStats(config,search,a);
                                switch(presentation) {
                                    case 'barchart':
                                          $scope.barchart[a][b] = res;
@@ -93,31 +93,39 @@
 }
 };
 
+
 //compute statistics, four cases:
 //dates  - start and end dates
 //values - either single parameter,enumerated values
 //       - several values as boolean
-function getStats(config,search,a,b) {
+function getStats(config,search,a) {
 
        //Create an array of objects to return
        var arr = [];
 
        //Get hold of target fields
-       var operational_field_arr = (config.component[a].visuals[b].operational_field).split('.');
-       var db_field = config.component[a].visuals[b].db_field;
+       var operational_field_arr = (config.component[a].visuals[0].operational_field).split('.');
+       var db_field = config.component[a].visuals[0].db_field;
 
 
        //Operational_field is either two dates..
-      if ((config.component[a].visuals[b].operational_field).indexOf('-')>-1) {
+       if ((config.component[a].visuals[0].operational_field).indexOf('-')>-1) {
 
-            var replacement_field_arr = [];
-            //if replacement_field exist
-            if (config.component[a].visuals[b].replacement_field) {
-                replacement_field_arr = (config.component[a].visuals[b].replacement_field).split('-');
+            //If we have replacement_field dates. The replacement dates are just counted
+            //once and used as a replacement value if operational field values
+            //does not exist.
+            if (config.component[a].visuals[0].replacement_field) {
+
+                var replacementDates = traverseDates(search[a].data.feed.entries, 0);
+
             }
-            if (config.component[a].visuals[b].field_db_dates) {
-                var field_db_dates_arr = (config.component[a].visuals[b].field_db_dates).split('-');
-            }
+
+            //If we have comparison dates
+       /*     if (config.component[a].visuals[0].field_db_dates) {
+                var field_db_dates_arr = (config.component[a].visuals[0].field_db_dates).split('-');
+                var diff = diffDates(field_db_dates_arr);
+                console.log(diff, "field_db_dates");
+            } */
 
 
       //..or a value
@@ -140,16 +148,37 @@ function getStats(config,search,a,b) {
       }
         //sum the different categories
         if (arr.length > 0){
-
           arr = sum(arr);
         }
 
-        console.log(arr);
-
  return arr;
 
-       };
+ };
 
+
+
+//Traverse tree depth first, fetch db_field and operational_field
+//Create an object or array of objects to be returned with db_fields (enumerated values)
+function traverseDates(search,dates_arr, replacement_diff) {
+   var i;
+   var obj = {};
+
+    for (i in search) {
+        //Find start and end replacement days
+
+        if (!!search[i] && typeof(search[i])=="object") {
+           //console.log(search[i], "object");
+           traverseDates(search[i], replacement_diff);
+        } else {
+
+        }
+    }
+}
+
+//Compare two dates and get the number of days difference
+function diffDates(op_dates) {
+     return Math.floor(((Date.parse(op_dates[1])) - (Date.parse(op_dates[0]))) / 86400000)
+}
 
 //We have an array to pass highchart. But some name categories could be duplicates. Thus, sum the values.
 function sum(arr){
@@ -214,31 +243,5 @@ function traverse(control, search, db_field_arr, operational_field_arr, arr) {
 
    if (search === control) { return arr };
 }
-
-//Compare two dates and get the number of days difference
-function diffDates(op_dates) {
-     return Math.floor(((Date.parse(op_dates[1])) - (Date.parse(op_dates[0]))) / 86400000)
-}
-
-//input - two sets of start and stop dates
-//return the number of days overlapping
-function getDateOverlap(op_dates,db_dates) {
-
-    //if there are not four dates, return with no overlapping => 0
-    if ((db_dates.length<2)&&(op_dates.length<2)) {
-      return 0
-    }
-
-    //If end_date comes before the other start_date, no overlapping => 0
-    if ((db_dates[1] < op_dates[0]) || (op_dates[1] < db_dates[0])) {
-       return 0
-    } else { //Get the smallest difference
-      var diff1 = Math.floor(((Date.parse(op_dates[1])) - (Date.parse(db_dates[0]))) / 86400000);
-      var diff2 = Math.floor(((Date.parse(db_dates[1])) - (Date.parse(op_dates[0]))) / 86400000);
-      //Return the smallest of diff1 or diff2
-      if (diff1 < diff2) { return diff1 } else {return diff2 } end
-    }
-}
-
 
 module.exports = myController;
