@@ -1,4 +1,4 @@
- "use strict";
+"use strict";
 
  var myController = function ($scope, $controller, dbSearch, getSearch) {
 
@@ -115,10 +115,25 @@ function getStats(config,search,a) {
             //once and used as a replacement value if operational field values
             //does not exist.
             if (config.component[a].visuals[0].replacement_field) {
+               for (var j=0;j<(search[a].data.feed.entries).length;j++){
+                   var replacement_diff = -1;
+                   //Assume that replacement_dates are high in the json-hierarchy
+                   console.log(search[a].data.feed.entries[j], "search");
 
-                var replacementDates = traverseDates(search[a].data.feed.entries, 0);
+                   var replacement_diff = diffDates(search[a].data.feed.entries[j].start_date, search[a].data.feed.entries[j].end_date);
 
+
+                   //Get the dates
+                   var obj = traverseDates(search[a].data.feed.entries[j], (replacement_diff > 0 ? replacement_diff:-1));
+
+                   //add to arr
+                   arr.push(obj);
+
+
+               }
             }
+
+
 
             //If we have comparison dates
        /*     if (config.component[a].visuals[0].field_db_dates) {
@@ -133,14 +148,14 @@ function getStats(config,search,a) {
 
           //If db_field is one field array, chop it up directly
           if (db_field.length === 1) {
-             var arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
+              arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
                                 config.component[a].visuals[0].db_field[0].split('.'),
                                 config.component[a].visuals[0].operational_field.split('.'), []);
 
 
           //db_field is an array which contains booleans to be summed up
           } else {
-                var arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
+                arr = traverse(search[a].data.feed.entries, search[a].data.feed.entries,
                                     config.component[a].visuals[0].db_field,
                                     config.component[a].visuals[0].operational_field.split('.'), []);
           }
@@ -159,25 +174,30 @@ function getStats(config,search,a) {
 
 //Traverse tree depth first, fetch db_field and operational_field
 //Create an object or array of objects to be returned with db_fields (enumerated values)
-function traverseDates(search,dates_arr, replacement_diff) {
+function traverseDates(search, replacement_diff) {
    var i;
    var obj = {};
 
+
     for (i in search) {
+
         //Find start and end replacement days
-
         if (!!search[i] && typeof(search[i])=="object") {
-           //console.log(search[i], "object");
-           traverseDates(search[i], replacement_diff);
-        } else {
 
-        }
+           //Needed to include people also - which is not generic..
+           if ((search[i].start_date !== undefined)&&(search[i].end_date !== undefined)){
+
+           }
+           traverseDates(search[i], replacement_diff);
+
+        } //Nothings happens with the nodes that are not objects.
     }
 }
 
+
 //Compare two dates and get the number of days difference
-function diffDates(op_dates) {
-     return Math.floor(((Date.parse(op_dates[1])) - (Date.parse(op_dates[0]))) / 86400000)
+function diffDates(start_date, end_date) {
+     return Math.floor(((Date.parse(end_date)) - (Date.parse(start_date))) / 86400000)
 }
 
 //We have an array to pass highchart. But some name categories could be duplicates. Thus, sum the values.
@@ -239,7 +259,7 @@ function traverse(control, search, db_field_arr, operational_field_arr, arr) {
 
         }
     }
-   // var last = Object.keys(search)[Object.keys(search).length-1];
+
 
    if (search === control) { return arr };
 }
