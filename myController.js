@@ -2,8 +2,6 @@
 
  var myController = function ($scope, $controller, dbSearch, getSearch) {
 
-              //var id = "a9fb0ae5ad56720b48766d8db219217e";
-              //var id = "d9f287b7b7fd667d175b5a60280023e7";
               var id = "d9f287b7b7fd667d175b5a6028026ce7";
 
 
@@ -117,23 +115,26 @@ function getStats(config,search,a) {
             if (config.component[a].visuals[0].replacement_field) {
                for (var j=0;j<(search[a].data.feed.entries).length;j++){
                    var replacement_diff = -1;
-                   //Assume that replacement_dates are high in the json-hierarchy
+                   //Assume replacement_dates are high in the json-hierarchy
                    console.log(search[a].data.feed.entries[j], "search");
 
-                   var replacement_diff = diffDates(search[a].data.feed.entries[j].start_date, search[a].data.feed.entries[j].end_date);
+                   if ((search[a].data.feed.entries[j].start_date !== undefined)&&(search[a].data.feed.entries[j].start_date !== undefined)){
+                     replacement_diff = diffDates(search[a].data.feed.entries[j].start_date, search[a].data.feed.entries[j].end_date);
+                   }
 
+                   //Since we assume the fields are called start and end_date, searching for one field is enough
+                   var operational_field2 = (config.component[a].visuals[0].operational_field.split("-"))[0];
 
                    //Get the dates
-                   var obj = traverseDates(search[a].data.feed.entries[j], (replacement_diff > 0 ? replacement_diff:-1));
+                    var obj = traverseDates(search[a].data.feed.entries[j], (replacement_diff > 0 ? replacement_diff:-1),
+                    operational_field2.split("."), config.component[a].visuals[0].db_field[0].split('.'), {});
 
                    //add to arr
-                   arr.push(obj);
+                //   arr.push(obj);
 
 
                }
             }
-
-
 
             //If we have comparison dates
        /*     if (config.component[a].visuals[0].field_db_dates) {
@@ -174,9 +175,8 @@ function getStats(config,search,a) {
 
 //Traverse tree depth first, fetch db_field and operational_field
 //Create an object or array of objects to be returned with db_fields (enumerated values)
-function traverseDates(search, replacement_diff) {
+function traverseDates(search, replacement_diff, operational_field_arr2, db_field_arr, obj) {
    var i;
-   var obj = {};
 
 
     for (i in search) {
@@ -184,13 +184,18 @@ function traverseDates(search, replacement_diff) {
         //Find start and end replacement days
         if (!!search[i] && typeof(search[i])=="object") {
 
+            if ((i === db_field_arr[0])&&(db_field_arr.length > 1)) { db_field_arr.shift() }
+
+            if (i === operational_field_arr2[0]){ operational_field_arr2.shift() };
+           console.log(i,search[i], "traverse");
+
            //Needed to include people also - which is not generic..
-           if ((search[i].start_date !== undefined)&&(search[i].end_date !== undefined)){
+          // if ((search[i].people !== undefined)&&(search[i].people.expedition_dates !== undefined)) {
 
-           }
-           traverseDates(search[i], replacement_diff);
+           //}
+           traverseDates(search[i], replacement_diff, operational_field_arr2, db_field_arr, obj);
 
-        } //Nothings happens with the nodes that are not objects.
+        } else {   if (i === db_field_arr[0]){ obj.name = search[i]; } }//Add name to object
     }
 }
 
