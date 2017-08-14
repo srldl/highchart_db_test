@@ -108,6 +108,7 @@ function getStats(config,search,a) {
 
        //Operational_field is either two dates..
        if ((config.component[a].visuals[0].operational_field).indexOf('-')>-1) {
+            var obj = {};
 
             //If we have replacement_field dates. The replacement dates are just counted
             //once and used as a replacement value if operational field values
@@ -126,11 +127,15 @@ function getStats(config,search,a) {
                    var operational_field2 = (config.component[a].visuals[0].operational_field.split("-"))[0];
 
                    //Get the dates
-                    var obj = traverseDates(search[a].data.feed.entries[j], (replacement_diff > 0 ? replacement_diff:-1),
-                    operational_field2.split("."), config.component[a].visuals[0].db_field[0].split('.'), {});
+                    obj = traverseDates(search[a].data.feed.entries, search[a].data.feed.entries[j], (replacement_diff > 0 ? replacement_diff:-1),
+                          operational_field2.split("."), config.component[a].visuals[0].db_field[0].split('.'), {});
+
 
                    //add to arr
-                //   arr.push(obj);
+                   if ((obj.hasOwnProperty('y')) &&(obj.y > 0)) {
+                     console.log(obj, "obj");
+                     arr.push(obj);
+                   }
 
 
                }
@@ -175,9 +180,8 @@ function getStats(config,search,a) {
 
 //Traverse tree depth first, fetch db_field and operational_field
 //Create an object or array of objects to be returned with db_fields (enumerated values)
-function traverseDates(search, replacement_diff, operational_field_arr2, db_field_arr, obj) {
+function traverseDates(control,search, replacement_diff, operational_field_arr2, db_field_arr, obj) {
    var i;
-
 
     for (i in search) {
 
@@ -186,17 +190,39 @@ function traverseDates(search, replacement_diff, operational_field_arr2, db_fiel
 
             if ((i === db_field_arr[0])&&(db_field_arr.length > 1)) { db_field_arr.shift() }
 
-            if (i === operational_field_arr2[0]){ operational_field_arr2.shift() };
-           console.log(i,search[i], "traverse");
+            if ((i === operational_field_arr2[0])&&(operational_field_arr2.length > 1)){
+                operational_field_arr2.shift();
+                //If expedition_dates are found, remove one replacement_date and add expedition_dates instead
+                if (i === "expedition_dates") {
+                  //Traverse the expedition_dates
+                  var len = search[i].length;
+                  console.log(obj, i,search[i][0].end_date, len, "expedition");
+                  while (len--) {
+                          obj.y = obj.y + (diffDates(search[i][len].end_date - search[i][len].start_date)) - replacement_diff;
+                  }
+                  console.log(obj, i,search[i][0].end_date, "expedition2");
+                }
+
+                //If object is people, check for expedition dates and get these or add replacement dates
+                //This part is not generic!
+                if (i === "people") {
+                  //Add replacement_dates to all people participating
+                  obj.y = search[i].length * replacement_diff;
+                }
+            };
+
 
            //Needed to include people also - which is not generic..
           // if ((search[i].people !== undefined)&&(search[i].people.expedition_dates !== undefined)) {
 
            //}
-           traverseDates(search[i], replacement_diff, operational_field_arr2, db_field_arr, obj);
+           traverseDates(control, search[i], replacement_diff, operational_field_arr2, db_field_arr, obj);
 
         } else {   if (i === db_field_arr[0]){ obj.name = search[i]; } }//Add name to object
     }
+
+if (search === control) { return obj };
+return obj;
 }
 
 
